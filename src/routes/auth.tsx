@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Eye, EyeOff, User, Lock, ArrowRight, FolderClosed, FileText, Cloud, ShieldCheck, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import bgAsset from "@/assets/darms-clipart-bg.jpg.asset.json";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,7 +30,7 @@ function PasswordInput({
         required
         minLength={minLength}
         placeholder={placeholder}
-        className="pl-10 pr-10 h-11 bg-slate-50/60 border-slate-200"
+        className="pl-10 pr-10 h-11 bg-slate-50/60 border-slate-200 focus:border-[#3b6ea5] focus:ring-2 focus:ring-[#3b6ea5]/20"
       />
       <button
         type="button"
@@ -152,135 +151,199 @@ function AuthPage() {
   };
 
   return (
-    <div
-      className="min-h-screen w-full grid lg:grid-cols-2 bg-white bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: `url(${bgAsset.url})` }}
-    >
-      {/* LEFT: illustration */}
-      <div className="relative hidden lg:flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-sky-100/80 via-blue-50/70 to-slate-100/80 backdrop-blur-sm p-12">
-        <div className="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_20%_20%,rgba(59,110,165,0.15),transparent_50%),radial-gradient(circle_at_80%_70%,rgba(125,211,252,0.25),transparent_55%)]" />
-        <div className="relative z-10 flex flex-col items-center gap-10">
-          <BrandIllustration />
-          <div className="text-center">
-            <h2 className="text-2xl font-semibold text-slate-800">Your documents, beautifully organized.</h2>
-            <p className="mt-3 text-sm tracking-[0.25em] uppercase text-slate-500">
-              Secure · Organized · Collaborative
-            </p>
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#eef2f6] p-4">
+      <div className="w-full max-w-[1120px] bg-white rounded-[3rem] shadow-2xl shadow-slate-200/60 overflow-hidden flex flex-col lg:flex-row transition-shadow hover:shadow-[0_40px_100px_rgba(0,20,40,0.14)]">
+
+        {/* LEFT: illustration */}
+        <div className="relative flex-1 bg-gradient-to-br from-[#f5f9ff] to-[#e6edf6] p-8 flex flex-col items-center justify-center min-h-[380px] lg:min-h-[480px]">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute w-40 h-40 rounded-full bg-[#3b6ea5] -top-10 -right-8" />
+            <div className="absolute w-24 h-24 rounded-full bg-[#6b8db5] bottom-6 -left-8" />
+            <div className="absolute w-14 h-14 rounded-full bg-[#a0bcdb] top-1/3 right-4" />
+          </div>
+          <div className="relative z-10 flex flex-col items-center gap-8">
+            <BrandIllustration />
+            <div className="text-center bg-white/60 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/20">
+              <p className="text-sm text-slate-600 font-medium">
+                <span className="text-[#3b6ea5] mr-1.5">✦</span>
+                Secure · Organized · Collaborative
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* RIGHT: form */}
-      <div className="flex items-center justify-center px-6 py-10 sm:px-12 bg-white/90 backdrop-blur-md">
-        <div className="w-full max-w-md">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-50 border border-sky-100 text-sky-700 text-xs font-medium mb-8">
-            <FolderClosed className="w-3.5 h-3.5" />
-            DARMS
-          </div>
-
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
-            {mode === "signin" ? "Welcome to DARMS" : "Create your account"}
-          </h1>
-          <p className="mt-2 text-sm text-slate-500">
-            {mode === "signin"
-              ? "Sign in to collaborate with your team and access your secure archive."
-              : "Join your team's secure document workspace in seconds."}
-          </p>
-
-
-          <form onSubmit={submit} className="mt-8 space-y-4">
-            {mode === "signup" && (
-              <>
-                <div className="space-y-1.5">
-                  <Label htmlFor="name" className="text-slate-700">Full name</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                    <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} required className="pl-10 h-11 bg-slate-50/60 border-slate-200" />
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="employeeId" className="text-slate-700">Employee ID</Label>
-                  <Input id="employeeId" value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} required className="h-11 bg-slate-50/60 border-slate-200" />
-                </div>
-                {!isFirstUser && (
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1.5">
-                      <Label htmlFor="department" className="text-slate-700">Department</Label>
-                      <select id="department" value={department} onChange={(e) => setDepartment(e.target.value)} required className="w-full h-11 border border-slate-200 bg-slate-50/60 rounded-md px-3 text-sm">
-                        <option value="">Select</option>
-                        {depsQ.data?.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}
-                      </select>
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="role" className="text-slate-700">Role</Label>
-                      <select id="role" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required className="w-full h-11 border border-slate-200 bg-slate-50/60 rounded-md px-3 text-sm">
-                        <option value="">Select</option>
-                        {jobsQ.data?.map((j: any) => <option key={j.id} value={j.name}>{j.name}</option>)}
-                      </select>
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-
-            <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-slate-700">Username or email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@company.com" className="pl-10 h-11 bg-slate-50/60 border-slate-200" />
-              </div>
+        {/* RIGHT: form */}
+        <div className="flex-1 p-8 lg:p-12 flex items-center justify-center bg-white">
+          <div className="w-full max-w-md">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-50 border border-sky-100 text-sky-700 text-xs font-semibold uppercase tracking-wider mb-6">
+              <FolderClosed className="w-3.5 h-3.5" />
+              DARMS
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-slate-700">Password</Label>
-              <PasswordInput id="password" value={password} onChange={setPassword} minLength={6} placeholder="••••••••" />
-            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
+              {mode === "signin" ? "Welcome to" : "Create your"}{" "}
+              <span className="text-[#3b6ea5]">DARMS</span>
+            </h1>
+            <p className="mt-1.5 text-sm text-slate-500">
+              {mode === "signin"
+                ? "Sign in to collaborate with your team and access your secure archive."
+                : "Join your team's secure document workspace in seconds."}
+            </p>
 
-            {mode === "signup" && (
-              <div className="space-y-1.5">
-                <Label htmlFor="confirmPassword" className="text-slate-700">Confirm password</Label>
-                <PasswordInput id="confirmPassword" value={confirmPassword} onChange={setConfirmPassword} minLength={6} placeholder="••••••••" />
-              </div>
-            )}
-
-            {mode === "signin" && (
-              <div className="flex items-center pt-1">
-                <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
-                  <Checkbox checked={remember} onCheckedChange={(v) => setRemember(!!v)} />
-                  Remember me
-                </label>
-              </div>
-            )}
-
-            <Button
-              type="submit"
-              disabled={loading}
-              className="group w-full h-11 mt-2 text-white font-semibold shadow-lg shadow-blue-500/30 border-0 bg-gradient-to-r from-[#3b6ea5] to-sky-500 hover:from-[#325d8c] hover:to-sky-600"
-            >
-              {loading ? "Please wait…" : (
-                <span className="inline-flex items-center gap-2">
-                  {mode === "signin" ? "Login" : "Create account"}
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                </span>
+            <form onSubmit={submit} className="mt-8 space-y-4">
+              {mode === "signup" && (
+                <>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="name" className="text-slate-700 text-sm font-medium">Full name</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                      <Input
+                        id="name"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        required
+                        className="pl-10 h-11 bg-slate-50/60 border-slate-200 focus:border-[#3b6ea5] focus:ring-2 focus:ring-[#3b6ea5]/20"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="employeeId" className="text-slate-700 text-sm font-medium">Employee ID</Label>
+                    <Input
+                      id="employeeId"
+                      value={employeeId}
+                      onChange={(e) => setEmployeeId(e.target.value)}
+                      required
+                      className="h-11 bg-slate-50/60 border-slate-200 focus:border-[#3b6ea5] focus:ring-2 focus:ring-[#3b6ea5]/20"
+                    />
+                  </div>
+                  {!isFirstUser && (
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="department" className="text-slate-700 text-sm font-medium">Department</Label>
+                        <select
+                          id="department"
+                          value={department}
+                          onChange={(e) => setDepartment(e.target.value)}
+                          required
+                          className="w-full h-11 border border-slate-200 bg-slate-50/60 rounded-md px-3 text-sm focus:border-[#3b6ea5] focus:ring-2 focus:ring-[#3b6ea5]/20 outline-none"
+                        >
+                          <option value="">Select</option>
+                          {depsQ.data?.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}
+                        </select>
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="role" className="text-slate-700 text-sm font-medium">Role</Label>
+                        <select
+                          id="role"
+                          value={jobTitle}
+                          onChange={(e) => setJobTitle(e.target.value)}
+                          required
+                          className="w-full h-11 border border-slate-200 bg-slate-50/60 rounded-md px-3 text-sm focus:border-[#3b6ea5] focus:ring-2 focus:ring-[#3b6ea5]/20 outline-none"
+                        >
+                          <option value="">Select</option>
+                          {jobsQ.data?.map((j: any) => <option key={j.id} value={j.name}>{j.name}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
-            </Button>
-          </form>
 
-          <div className="mt-6 text-sm text-center text-slate-600">
-            {mode === "signin" ? (
-              <>Don't have an account?{" "}
-                <button type="button" onClick={() => setMode("signup")} className="text-[#3b6ea5] font-semibold hover:underline">Create an account</button>
-              </>
-            ) : (
-              <>Already have an account?{" "}
-                <button type="button" onClick={() => setMode("signin")} className="text-[#3b6ea5] font-semibold hover:underline">Sign in</button>
-              </>
-            )}
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="text-slate-700 text-sm font-medium">Username or email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    placeholder="you@company.com"
+                    className="pl-10 h-11 bg-slate-50/60 border-slate-200 focus:border-[#3b6ea5] focus:ring-2 focus:ring-[#3b6ea5]/20"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="password" className="text-slate-700 text-sm font-medium">Password</Label>
+                <PasswordInput
+                  id="password"
+                  value={password}
+                  onChange={setPassword}
+                  minLength={6}
+                  placeholder="••••••••"
+                />
+              </div>
+
+              {mode === "signup" && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="confirmPassword" className="text-slate-700 text-sm font-medium">Confirm password</Label>
+                  <PasswordInput
+                    id="confirmPassword"
+                    value={confirmPassword}
+                    onChange={setConfirmPassword}
+                    minLength={6}
+                    placeholder="••••••••"
+                  />
+                </div>
+              )}
+
+              {mode === "signin" && (
+                <div className="flex items-center pt-1">
+                  <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
+                    <Checkbox
+                      checked={remember}
+                      onCheckedChange={(v) => setRemember(!!v)}
+                      className="data-[state=checked]:bg-[#3b6ea5] data-[state=checked]:border-[#3b6ea5] border-slate-300"
+                    />
+                    <span>Remember me</span>
+                  </label>
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="group w-full h-11 mt-2 text-white font-semibold shadow-lg shadow-blue-500/30 border-0 bg-gradient-to-r from-[#3b6ea5] to-sky-500 hover:from-[#325d8c] hover:to-sky-600 transition-all duration-200"
+              >
+                {loading ? "Please wait…" : (
+                  <span className="inline-flex items-center gap-2">
+                    {mode === "signin" ? "Login" : "Create account"}
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                  </span>
+                )}
+              </Button>
+            </form>
+
+            <div className="mt-6 text-sm text-center text-slate-600">
+              {mode === "signin" ? (
+                <>Don't have an account?{" "}
+                  <button
+                    type="button"
+                    onClick={() => setMode("signup")}
+                    className="text-[#3b6ea5] font-semibold hover:underline"
+                  >
+                    Create an account
+                  </button>
+                </>
+              ) : (
+                <>Already have an account?{" "}
+                  <button
+                    type="button"
+                    onClick={() => setMode("signin")}
+                    className="text-[#3b6ea5] font-semibold hover:underline"
+                  >
+                    Sign in
+                  </button>
+                </>
+              )}
+            </div>
+
+            <p className="text-xs text-slate-400 mt-8 text-center">
+              The first user to register becomes the Super Admin automatically.
+            </p>
           </div>
-
-          <p className="text-xs text-slate-400 mt-8 text-center">
-            The first user to register becomes the Super Admin automatically.
-          </p>
         </div>
       </div>
     </div>
